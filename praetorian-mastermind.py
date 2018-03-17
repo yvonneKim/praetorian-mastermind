@@ -28,6 +28,7 @@ def run(headers):
         print("STARTING LEVEL "+str(level)+"\n")
         print(r.json())
         m = Mastermind.Mastermind(4, 6)
+        m.genTable()
 
         win = False
         res = (-1, -1)
@@ -47,8 +48,9 @@ def run(headers):
 
 
 def main():
-    if sys.argv[1] == 'reset':
-        reset(authenticate())
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'reset':
+            reset(authenticate())
         
     run(authenticate())
 

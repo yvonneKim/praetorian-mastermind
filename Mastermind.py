@@ -17,10 +17,11 @@ class Mastermind:
         remove = []
         for k in t:
             for g in t[k]:
+                print("RESPONSE for key: "+str(k)+", guess: "+str(g)+" is "+str(t[k][g]))
                 if t[k][g] != r:
-                   remove.append(k)
+                    remove.append(k)
 
-#        print("SIZE OF THE REMOVE LIST IS : "+len(remove)+"\n")
+        print("SIZE OF THE REMOVE LIST IS : "+str(len(remove))+"\n")
         for r in remove:
             del t[k]
 
@@ -63,7 +64,7 @@ class Mastermind:
         for i in keys:
             self.table[i] = {}
             for j in keys:
-                self.table[i][j] = {j : self.matchRes(i, j)}
+                self.table[i][j] = self.matchRes(i, j)
 
     
     def __str__(self):
