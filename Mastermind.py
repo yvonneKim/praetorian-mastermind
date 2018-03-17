@@ -1,4 +1,4 @@
-import itertools
+import itertools, random
 # beep boop I am programming
 
 class Mastermind:
@@ -7,7 +7,20 @@ class Mastermind:
         self.r = r
         self.t = t
         self.table = {}
+        self.guess = tuple(i for i in range(0, r))
 
+
+    def randomGuess(self):
+        return random.sample(set(range(0, self.t)), self.r)
+        
+    def getGuess(self):
+        g = self.guess
+        self.guess = self.randomGuess() # just gonna do random for now?
+        return {'guess': list(self.guess)}
+
+    def next(self):
+        # what's the next best guess? how do we determine that? try random for now
+        pass
 
     def matchRes(self, i, j):
         # takes in two tuples and returns tuple (x , y) where
@@ -41,7 +54,7 @@ class Mastermind:
         s += "\n===================================================================================================================================\n"
         
         for i in self.table:
-            s += str(i)
+            s += str(i) + " || "
             for j in self.table[i]:
                 s += str(self.table[i][j]) + " | "
             s += "\n-------------------------------------------------------------------------------------------------------------------------------\n"
@@ -50,6 +63,6 @@ class Mastermind:
 
 
 if __name__=="__main__":
-    m = Mastermind(2, 4)
+    m = Mastermind(4, 6)
     m.genTable()
     print(m)
