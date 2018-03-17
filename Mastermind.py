@@ -17,13 +17,18 @@ class Mastermind:
         remove = []
         for k in t:
             for g in t[k]:
-                print("RESPONSE for key: "+str(k)+", guess: "+str(g)+" is "+str(t[k][g]))
-                if t[k][g] != r:
-                    remove.append(k)
+                if g == self.guess:
+#                    print("RESPONSE for key: "+str(k)+", guess: "+str(g)+" is "+str(t[k][g]))
+                    if t[k][g] != r:
+#                        print("DOES NOT MATCH "+str(r)+"- MOVING KEY "+str(k)+" TO REMOVE!")
+                        remove.append(k)
 
-        print("SIZE OF THE REMOVE LIST IS : "+str(len(remove))+"\n")
+        print("REMOVE LIST SIZE : "+str(len(remove)))
         for r in remove:
-            del t[k]
+            if r in t:
+                del t[r]
+
+        print("TABLE SIZE NOW : "+str(len(self.table)))
 
                 
         
