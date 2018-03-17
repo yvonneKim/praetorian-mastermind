@@ -12,6 +12,11 @@ def authenticate():
     headers['Content-Type'] = 'application/json'
     return headers
 
+def reset(h):
+    url = 'https://mastermind.praetorian.com/reset/'
+    r = requests.post(url, headers=h)
+    print(r.json())
+
 
 def run(headers):
     h = headers
@@ -25,8 +30,9 @@ def run(headers):
         m = Mastermind.Mastermind(4, 6)
 
         win = False
+        res = (-1, -1)
         while(win == False):
-            g = m.getGuess()
+            g = m.nextGuess(res)
             print("TRYING GUESS: "+str(g))
             r = requests.post(levelurl, data=json.dumps(g), headers=h)
             print(r.json())
@@ -36,8 +42,14 @@ def run(headers):
                 print("OUT OF GUESSES- RESTARTING LEVEL\n")
                 break
 
+            # else, it's just a regular response
+            res = tuple(r.json()['response'])
+
 
 def main():
+    if sys.argv[1] == 'reset':
+        reset(authenticate())
+        
     run(authenticate())
 
 if __name__ == "__main__":

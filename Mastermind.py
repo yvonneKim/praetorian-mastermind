@@ -7,21 +7,41 @@ class Mastermind:
         self.r = r
         self.t = t
         self.table = {}
-        self.guess = tuple(i for i in range(0, r))
+        self.guess = tuple(i for i in range(0, r)) 
 
 
+    def reduceTable(self, r):
+        # reduces the table as guesses are made. Called in nextGuess()
+        # uses self.guess for the last guess, response param r (i,j)
+        t = self.table
+        remove = []
+        for k in t:
+            for g in t[k]:
+                if t[k][g] != r:
+                   remove.append(k)
+
+#        print("SIZE OF THE REMOVE LIST IS : "+len(remove)+"\n")
+        for r in remove:
+            del t[k]
+
+                
+        
     def randomGuess(self):
         return random.sample(set(range(0, self.t)), self.r)
+
+    def nextGuess(self, res):
+        # takes in tuple res that represents the response
+        # (i, j) where i is # matches, j is # that match position as well
+        # if res is (-1, -1), means first guess, just return defaulto
         
-    def getGuess(self):
-        g = self.guess
-        self.guess = self.randomGuess() # just gonna do random for now?
+        if res[0] == -1:
+            return {'guess': list(self.guess)}
+
+        self.reduceTable(res)
+        self.guess = self.randomGuess() # change this 
         return {'guess': list(self.guess)}
 
-    def next(self):
-        # what's the next best guess? how do we determine that? try random for now
-        pass
-
+    
     def matchRes(self, i, j):
         # takes in two tuples and returns tuple (x , y) where
         # x is # that match, y is # of those matches that also match
