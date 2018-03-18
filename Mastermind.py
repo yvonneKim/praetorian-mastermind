@@ -7,8 +7,8 @@ class Mastermind:
         self.r = r
         self.t = t
         self.table = {}
-        self.guess = tuple(i for i in range(0, r)) 
-
+        self.guess = tuple(i for i in range(0, r))
+        self.resRange = {x for x in itertools.product(range(0, r+1), repeat=2) if x[1] <= x[0]}
 
     def reduceTable(self, r):
         # reduces the table as guesses are made. Called in nextGuess()
@@ -23,13 +23,12 @@ class Mastermind:
 #                        print("DOES NOT MATCH "+str(r)+"- MOVING KEY "+str(k)+" TO REMOVE!")
                         remove.append(k)
 
-        print("REMOVE LIST SIZE : "+str(len(remove)))
+#        print("REMOVE LIST SIZE : "+str(len(remove)))
         for r in remove:
             if r in t:
                 del t[r]
 
         print("TABLE SIZE NOW : "+str(len(self.table)))
-
                 
         
     def randomGuess(self):
@@ -44,7 +43,25 @@ class Mastermind:
             return {'guess': list(self.guess)}
 
         self.reduceTable(res)
-        self.guess = self.randomGuess() # change this 
+        t = self.table
+        if len(t) == 1:
+            self.guess = list(t.keys())[0]
+            return {'guess': self.guess}
+            
+        keepers = []
+        maxSet = set()
+        for g in list(t.values())[0]:
+            s = set()
+            for k in t:
+                s.add(t[k][g])
+            print(s)
+            if s.intersection(self.resRange) >= maxSet:
+                maxSet = s
+                print("adding another to keepers: "+str(g))
+                keepers.append(g)
+        self.guess = random.choice(keepers)
+        
+#        self.guess = self.randomGuess() # change this 
         return {'guess': list(self.guess)}
 
     
