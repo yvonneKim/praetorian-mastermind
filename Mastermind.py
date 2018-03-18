@@ -28,7 +28,7 @@ class Mastermind:
             if r in t:
                 del t[r]
 
-        print("TABLE SIZE NOW : "+str(len(self.table)))
+#        print("TABLE SIZE NOW : "+str(len(self.table)))
                 
         
     def randomGuess(self):
@@ -54,10 +54,10 @@ class Mastermind:
             s = set()
             for k in t:
                 s.add(t[k][g])
-            print(s)
+#            print(s)
             if s.intersection(self.resRange) >= maxSet:
                 maxSet = s
-                print("adding another to keepers: "+str(g))
+#                print("adding another to keepers: "+str(g))
                 keepers.append(g)
         self.guess = random.choice(keepers)
         

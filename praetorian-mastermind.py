@@ -24,10 +24,10 @@ def run(headers):
 
     while(level < 7):
         levelurl = 'https://mastermind.praetorian.com/level/'+str(level)+'/'
-        r = requests.get(levelurl, headers=h)
+        r = requests.get(levelurl, headers=h).json()
         print("STARTING LEVEL "+str(level)+"\n")
-        print(r.json())
-        m = Mastermind.Mastermind(4, 6)
+        print(r)
+        m = Mastermind.Mastermind(r['numGladiators'], r['numWeapons'])
         m.genTable()
 
         win = False
@@ -35,16 +35,16 @@ def run(headers):
         while(win == False):
             g = m.nextGuess(res)
             print("TRYING GUESS: "+str(g))
-            r = requests.post(levelurl, data=json.dumps(g), headers=h)
-            print(r.json())
-            if('message' in r.json()):
-                win = True
-            if('error' in r.json()): # means we're out of guesses...
+            r = requests.post(levelurl, data=json.dumps(g), headers=h).json()
+            print(r)
+            if('error' in r and r['error'] == 'Too many guesses. Try again!'):
                 print("OUT OF GUESSES- RESTARTING LEVEL\n")
                 break
-
-            # else, it's just a regular response
-            res = tuple(r.json()['response'])
+            if('message' in r and r['message'] == 'Onto the next level'):
+                level += 1
+                win = True
+            else:
+                res = tuple(r['response'])
 
 
 def main():
