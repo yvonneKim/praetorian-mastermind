@@ -28,10 +28,9 @@ def run(headers):
         print("STARTING LEVEL "+str(level)+"\n")
         print(r)
         m = Mastermind.Mastermind(r['numGladiators'], r['numWeapons'])
-        m.genTable()
 
         win = False
-        res = (-1, -1)
+        res = None
         while(win == False):
             g = m.nextGuess(res)
             print("TRYING GUESS: "+str(g))

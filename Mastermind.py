@@ -2,12 +2,18 @@ import itertools, random
 # beep boop I am programming
 
 class Mastermind:
-    def __init__(self, r, t):
+    def __init__(self, r, t, res=None):
         # r = glads; t = weaps
         self.r = r
         self.t = t
         self.table = {}
-        self.guess = tuple(i for i in range(0, r))
+        self.guess = tuple(i for i in range(0, r)) # default guess
+
+        # given res param, inits with default table for that res
+        # the default table is for the default guess [0, 1, 2, ...]
+        self.genTable(res)
+
+        # calculates set of all possible response tuples
         self.resRange = {x for x in itertools.product(range(0, r+1), repeat=2) if x[1] <= x[0]}
 
     def reduceTable(self, r):
@@ -34,12 +40,12 @@ class Mastermind:
     def randomGuess(self):
         return random.sample(set(range(0, self.t)), self.r)
 
-    def nextGuess(self, res):
+    def nextGuess(self, res=None):
         # takes in tuple res that represents the response
         # (i, j) where i is # matches, j is # that match position as well
         # if res is (-1, -1), means first guess, just return defaulto
         
-        if res[0] == -1:
+        if res == None:
             return {'guess': list(self.guess)}
 
         self.reduceTable(res)
@@ -81,14 +87,29 @@ class Mastermind:
         return (x, y)
 
         
-    def genTable(self):
-        keys = list(itertools.permutations(range(0, self.t), self.r))
-        for i in keys:
-            self.table[i] = {}
-            for j in keys:
-                self.table[i][j] = self.matchRes(i, j)
+    def genTable(self, seed=None):
+        # if given a seed, which is a response tuple for a default guess,
+        # will initialize the table given the seed
+        assert seed is None
+        
+        if seed is None:
+            keys = list(itertools.permutations(range(0, self.t), self.r))
+            for i in keys:
+                self.table[i] = {}
+                for j in keys:
+                    self.table[i][j] = self.matchRes(i, j)
 
-    
+        else:
+            keys = list(itertools.permutations(range(0, self.t), self.r))
+            for i in keys:
+                if self.matchRes(i, self.guess) == seed:
+                    self.table[i] = {}
+                    for j in keys:
+                        self.table[i][j] = self.matchRes(i, j)
+
+        print("size of the generated table is: "+str(len(self.table)))
+                    
+                    
     def __str__(self):
 
         s = "       "
