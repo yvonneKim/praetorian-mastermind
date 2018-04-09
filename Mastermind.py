@@ -9,10 +9,6 @@ class Mastermind:
         self.table = {}
         self.guess = tuple(i for i in range(0, r)) # default guess
 
-        # given res param, inits with default table for that res
-        # the default table is for the default guess [0, 1, 2, ...]
-        self.genTable(res)
-
         # calculates set of all possible response tuples
         self.resRange = {x for x in itertools.product(range(0, r+1), repeat=2) if x[1] <= x[0]}
 
@@ -88,10 +84,8 @@ class Mastermind:
 
         
     def genTable(self, seed=None):
-        # if given a seed, which is a response tuple for a default guess,
+        # if given a seed, which is dict of guess, res pairs,
         # will initialize the table given the seed
-        assert seed is None
-        
         if seed is None:
             keys = list(itertools.permutations(range(0, self.t), self.r))
             for i in keys:
@@ -100,12 +94,18 @@ class Mastermind:
                     self.table[i][j] = self.matchRes(i, j)
 
         else:
+            all_keys = list(itertools.permutations(range(0, self.t), self.r))
             keys = list(itertools.permutations(range(0, self.t), self.r))
+            print("initial size of the keys is: "+str(len(keys)))
+            
+            for k in seed.keys():
+                keys = [x for x in keys if self.matchRes(x, k) == seed[k]]
+                print("size of the new keys is: "+str(len(keys)))
+
             for i in keys:
-                if self.matchRes(i, self.guess) == seed:
-                    self.table[i] = {}
-                    for j in keys:
-                        self.table[i][j] = self.matchRes(i, j)
+                self.table[i] = {}
+                for j in all_keys:
+                    self.table[i][j] = self.matchRes(i, j)
 
         print("size of the generated table is: "+str(len(self.table)))
                     

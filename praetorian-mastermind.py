@@ -21,6 +21,7 @@ def reset(h):
 def run(headers):
     h = headers
     level = 1
+    seedCount = 4 #change later
 
     while(level < 7):
         levelurl = 'https://mastermind.praetorian.com/level/'+str(level)+'/'
@@ -31,6 +32,18 @@ def run(headers):
 
         win = False
         res = None
+        # initiate seed for generating the table
+        print("INITIALIZING SEED")
+        seed = {}
+        for x in range(0, seedCount):
+            g = m.randomGuess()
+            r = requests.post(levelurl, data=json.dumps({'guess': g}), headers=h).json()
+            print("RESPONSE FOR GUESS "+str(g)+" IS "+str(r))
+            seed[tuple(g)] = tuple(r['response'])
+
+        print("COMPLETE SEED")
+        m.genTable(seed)
+
         while(win == False):
             g = m.nextGuess(res)
             print("TRYING GUESS: "+str(g))
