@@ -82,35 +82,24 @@ class Mastermind:
 
         return (x, y)
 
-        
     def genTable(self, seed=None):
         # if given a seed, which is dict of guess, res pairs,
         # will initialize the table given the seed
         if seed is None:
-            keys = list(itertools.permutations(range(0, self.t), self.r))
+            keys = itertools.permutations(range(0, self.t), self.r)
             for i in keys:
                 self.table[i] = {}
                 for j in keys:
                     self.table[i][j] = self.matchRes(i, j)
 
         else:
+#            print("initial size of the keys is: "+str(len(keys)))
+#            keys = [x for x in keys if self.matchRes(]
+#            print("size of the new keys is: "+str(len(keys)))
 
-            if self.t > 10 and self.r > 5: # if it's outrageously large
-                all_keys = list(itertools.islice(itertools.permutations(range(0, self.t), self.r), 6000000))
-                keys = list(itertools.islice(itertools.permutations(range(0, self.t), self.r), 6000000))
-            else:
-                all_keys = list(itertools.permutations(range(0, self.t), self.r))                
-                keys = list(itertools.permutations(range(0, self.t), self.r))
-                
-            print("initial size of the keys is: "+str(len(keys)))
-            
-            for k in seed.keys():
-                keys = [x for x in keys if self.matchRes(x, k) == seed[k]]
-                print("size of the new keys is: "+str(len(keys)))
-
-            for i in keys:
+            for i in itertools.permutations(range(0, self.t), self.r):
                 self.table[i] = {}
-                for j in all_keys:
+                for j in itertools.permutations(range(0, self.t), self.r):
                     self.table[i][j] = self.matchRes(i, j)
 
         print("size of the generated table is: "+str(len(self.table)))

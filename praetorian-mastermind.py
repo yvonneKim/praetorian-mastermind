@@ -21,15 +21,20 @@ def reset(h):
 def run(headers):
     h = headers
     level = 1
-    seedCount = 4 #change later
 
     while(level < 7):
         levelurl = 'https://mastermind.praetorian.com/level/'+str(level)+'/'
         r = requests.get(levelurl, headers=h).json()
+        while('error' in r and r['error'] == 'Requested level cannot yet be challenged, complete lower levels first.'):
+            print("Getting level...")
+            level += 1
+            levelurl = 'https://mastermind.praetorian.com/level/'+str(level)+'/'
+            r = requests.get(levelurl, headers=h).json()
         print("STARTING LEVEL "+str(level)+"\n")
         print(r)
         m = Mastermind.Mastermind(r['numGladiators'], r['numWeapons'])
-
+        seedCount = r['numGuesses'] - 5
+        
         win = False
         res = None
         # initiate seed for generating the table
@@ -60,6 +65,7 @@ def run(headers):
 
 
 def main():
+    lvl = 1
     if len(sys.argv) > 1:
         if sys.argv[1] == 'reset':
             reset(authenticate())
