@@ -43,11 +43,18 @@ def run(headers):
         for x in range(0, seedCount):
             g = m.randomGuess()
             r = requests.post(levelurl, data=json.dumps({'guess': g}), headers=h).json()
+#            if('error' in r and r['error'] == 'Guess took too long, please restart game.'):
+            if('error' in r and r['error']):                
+                r = requests.get(levelurl, headers=h).json()
+                continue
+            
             print("RESPONSE FOR GUESS "+str(g)+" IS "+str(r))
             seed[tuple(g)] = tuple(r['response'])
 
         print("COMPLETE SEED")
-        m.genTable(seed)
+        if m.genTable(seed) == False: # got a bad batch of perms to try
+            print("GOT A BAD BATCH OF NUMBERS TO TRY- RESTARTING LEVEL")
+            continue
 
         while(win == False):
             g = m.nextGuess(res)
@@ -56,6 +63,9 @@ def run(headers):
             print(r)
             if('error' in r and r['error'] == 'Too many guesses. Try again!'):
                 print("OUT OF GUESSES- RESTARTING LEVEL\n")
+                break
+            if('error' in r and r['error'] == 'Guess took too long, please restart game.'):
+                print("GUESS TOOK TOO LONG- RESTARTING LEVEL\n")
                 break
             if('message' in r and r['message'] == 'Onto the next level'):
                 level += 1

@@ -3,6 +3,7 @@ import itertools, random
 
 class Mastermind:
     def __init__(self, r, t, res=None):
+        self.MAX_PERMS = 1000000
         # r = glads; t = weaps
         self.r = r
         self.t = t
@@ -96,8 +97,8 @@ class Mastermind:
         else:
 
             if self.t > 10 and self.r > 5: # if it's outrageously large
-                all_keys = list(itertools.islice(itertools.permutations(range(0, self.t), self.r), 6000000))
-                keys = list(itertools.islice(itertools.permutations(range(0, self.t), self.r), 6000000))
+                all_keys = list(itertools.islice(itertools.permutations(range(0, self.t), self.r), self.MAX_PERMS))
+                keys = list(itertools.islice(itertools.permutations(range(0, self.t), self.r), self.MAX_PERMS))
             else:
                 all_keys = list(itertools.permutations(range(0, self.t), self.r))                
                 keys = list(itertools.permutations(range(0, self.t), self.r))
@@ -106,6 +107,8 @@ class Mastermind:
             
             for k in seed.keys():
                 keys = [x for x in keys if self.matchRes(x, k) == seed[k]]
+                if len(keys) == 0: # got the wrong batch of perms to try
+                    return False
                 print("size of the new keys is: "+str(len(keys)))
 
             for i in keys:
@@ -114,24 +117,8 @@ class Mastermind:
                     self.table[i][j] = self.matchRes(i, j)
 
         print("size of the generated table is: "+str(len(self.table)))
-                    
-                    
-    def __str__(self):
 
-        s = "       "
-        for i in self.table:
-            s += str(i) + " "
-        s += "\n===================================================================================================================================\n"
         
-        for i in self.table:
-            s += str(i) + " || "
-            for j in self.table[i]:
-                s += str(self.table[i][j]) + " | "
-            s += "\n-------------------------------------------------------------------------------------------------------------------------------\n"
-                
-        return s
-
-
 if __name__=="__main__":
     m = Mastermind(4, 6)
     m.genTable()
