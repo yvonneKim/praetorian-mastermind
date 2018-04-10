@@ -3,7 +3,7 @@ import itertools, random
 
 class Mastermind:
     def __init__(self, r, t, res=None):
-        self.MAX_PERMS = 1000000
+        self.MAX_PERMS = 4000000
         # r = glads; t = weaps
         self.r = r
         self.t = t
