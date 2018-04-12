@@ -2,16 +2,20 @@ import itertools, random
 # beep boop I am programming
 
 class Mastermind:
-    def __init__(self, r, t, res=None):
-        self.MAX_PERMS = 4000000
+    def __init__(self, r, t, g, res=None):
+        self.MAX_PERMS = 2000000
         # r = glads; t = weaps
         self.r = r
         self.t = t
+        self.g = g
         self.table = {}
         self.guess = tuple(i for i in range(0, r)) # default guess
 
         # calculates set of all possible response tuples
         self.resRange = {x for x in itertools.product(range(0, r+1), repeat=2) if x[1] <= x[0]}
+
+    def getNumberOfGuesses(self):
+        return self.g
 
     def reduceTable(self, r):
         # reduces the table as guesses are made. Called in nextGuess()
@@ -103,20 +107,20 @@ class Mastermind:
                 all_keys = list(itertools.permutations(range(0, self.t), self.r))                
                 keys = list(itertools.permutations(range(0, self.t), self.r))
                 
-            print("initial size of the keys is: "+str(len(keys)))
+            print("Initial key table size is "+str(len(keys)))
             
             for k in seed.keys():
                 keys = [x for x in keys if self.matchRes(x, k) == seed[k]]
                 if len(keys) == 0: # got the wrong batch of perms to try
                     return False
-                print("size of the new keys is: "+str(len(keys)))
+                print(" ... reduced to "+str(len(keys)))
 
             for i in keys:
                 self.table[i] = {}
                 for j in all_keys:
                     self.table[i][j] = self.matchRes(i, j)
 
-        print("size of the generated table is: "+str(len(self.table)))
+        print("Final key table size is: "+str(len(self.table)))
 
         
 if __name__=="__main__":
