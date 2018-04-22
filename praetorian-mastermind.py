@@ -101,9 +101,12 @@ class MastermindSolver:
             g = m.randomGuess()
             r = self.request(levelurl, method='POST', data={'guess':g})
             if tuple(r['response']) == (0,0):
+                print("FOUND ZERO GUESS- REDUCING GUESS SPACE")
+                m.reduceGuessSpace(g)
+                print(m.getGuessSpace())
                 done = True
                 
-                
+        self.basicSolve(m)
             
         
     def basicSolve(self, m):
@@ -152,16 +155,18 @@ class MastermindSolver:
                   )
             print("---------------------------------------------------------")                            
 
-            basic = True if comb(r['numWeapons'], r['numGladiators'], exact=False) < 5000000 else False
+            basic = True if r['numWeapons'] < 20 else False
+            # basic = True if comb(r['numWeapons'], r['numGladiators'], exact=False) < 5000000 else False
             m = Mastermind.Mastermind(r['numGladiators'], r['numWeapons'], r['numGuesses'])
             
             # BASIC #
             if basic:
                 self.basicSolve(m)
 
-            # PARALLEL #
+            # ADVANCED #
             else:
-                self.basicSolve(m)
+                print("ADVANCED SOLVE ACTIVATE")
+                self.bigSolve(m)
                 # win = parallelSolve(m, levelurl)
 
             self.level += 1

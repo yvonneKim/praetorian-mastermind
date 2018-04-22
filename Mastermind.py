@@ -24,6 +24,9 @@ class Mastermind:
     def getNumberOfWeapons(self):
         return self.t
 
+    def getGuessSpace(self):
+        return self.guessSpace
+
     def reduceGuessSpace(self, s):
         self.guessSpace = self.guessSpace.difference(s)
 
@@ -50,7 +53,7 @@ class Mastermind:
     def nextGuess(self, res=None):
         # takes in tuple res that represents the response
         # (i, j) where i is # matches, j is # that match position as well
-        # if res is (-1, -1), means first guess, just return defaulto
+        # if res is None, means first guess, just return defaulto
         
         if res == None:
             return {'guess': list(self.guess)}
@@ -95,7 +98,7 @@ class Mastermind:
         # if given a seed, which is dict of guess, res pairs,
         # will initialize the table given the seed
         if seed is None:
-            keys = list(itertools.permutations(range(0, self.t), self.r))
+            keys = list(itertools.permutations(self.guessSpace, self.r))
             for i in keys:
                 self.table[i] = {}
                 for j in keys:
@@ -104,11 +107,11 @@ class Mastermind:
         else:
 
             if self.t > 10 and self.r > 5: # if it's outrageously large
-                all_keys = list(itertools.islice(itertools.permutations(range(0, self.t), self.r), self.MAX_PERMS))
-                keys = list(itertools.islice(itertools.permutations(range(0, self.t), self.r), self.MAX_PERMS))
+                all_keys = list(itertools.islice(itertools.permutations(self.guessSpace, self.r), self.MAX_PERMS))
+                keys = list(itertools.islice(itertools.permutations(self.guessSpace, self.r), self.MAX_PERMS))
             else:
-                all_keys = list(itertools.permutations(range(0, self.t), self.r))                
-                keys = list(itertools.permutations(range(0, self.t), self.r))
+                all_keys = list(itertools.permutations(self.guessSpace, self.r))                
+                keys = list(itertools.permutations(self.guessSpace, self.r))
                 
             print("Initial key table size is "+str(len(keys)))
             
