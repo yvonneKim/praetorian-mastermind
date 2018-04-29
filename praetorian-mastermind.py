@@ -66,14 +66,12 @@ class MastermindSolver:
         r = self.request(url, method='POST')
         print("< Game reset ! >")
 
-        
-    def basicSolve(self, m):
-    ### basic solver for small values of r and t ###
 
-        levelurl = self.BASE_URL + '/level/' + str(self.level) + '/'
+    def seedGen(self, m, levelurl):
+    ### generates a seed for genTable ###
+
         seed_count = m.getNumberOfGuesses() - 5
 
-        # initiate seed for generating the table
         print("Initializing seed ....")
 
         seed = {}
@@ -88,9 +86,36 @@ class MastermindSolver:
             seed[tuple(g)] = tuple(r['response'])
 
         print(".... Seed Complete")
-        print("---------------------------------------------------------")                
+        print("---------------------------------------------------------")
+        return seed
+        
+    
+    def bigSolve(self, m):
+    ### solver that attempts to reduce the number space by guessing
+    ### for [0,0]s first before solving as normal
+
+        levelurl = self.BASE_URL + '/level/' + str(self.level) + '/'
+
+        done = False
+        while done == False:
+            g = m.randomGuess()
+            r = self.request(levelurl, method='POST', data={'guess':g})
+            if tuple(r['response']) == (0,0):
+                print("FOUND ZERO GUESS- REDUCING GUESS SPACE")
+                m.reduceGuessSpace(g)
+                print(m.getGuessSpace())
+                done = True
+                
+        self.basicSolve(m)
+            
+        
+    def basicSolve(self, m):
+    ### basic solver for small values of r and t ###
+
+        levelurl = self.BASE_URL + '/level/' + str(self.level) + '/'
+
+        seed = self.seedGen(m, levelurl);
         m.genTable(seed)
-        print("---------------------------------------------------------")                
 
         # makes a guess
         win = False
@@ -130,16 +155,18 @@ class MastermindSolver:
                   )
             print("---------------------------------------------------------")                            
 
-            basic = True if comb(r['numWeapons'], r['numGladiators'], exact=False) < 5000000 else False
+            basic = True if r['numWeapons'] < 20 else False
+            # basic = True if comb(r['numWeapons'], r['numGladiators'], exact=False) < 5000000 else False
             m = Mastermind.Mastermind(r['numGladiators'], r['numWeapons'], r['numGuesses'])
             
             # BASIC #
             if basic:
                 self.basicSolve(m)
 
-            # PARALLEL #
+            # ADVANCED #
             else:
-                self.basicSolve(m)
+                print("ADVANCED SOLVE ACTIVATE")
+                self.bigSolve(m)
                 # win = parallelSolve(m, levelurl)
 
             self.level += 1
