@@ -47,6 +47,7 @@ class Mastermind:
 
         
     def randomGuess(self):
+        self.g -= 1
         return random.sample(self.guessSpace, self.r)
 
     
@@ -74,6 +75,7 @@ class Mastermind:
                 maxSet = s
                 keepers.append(g)
         self.guess = random.choice(keepers)
+        self.g -= 1
         
         return {'guess': list(self.guess)}
 
@@ -106,12 +108,8 @@ class Mastermind:
 
         else:
 
-            if self.t > 10 and self.r > 5: # if it's outrageously large
-                all_keys = list(itertools.islice(itertools.permutations(self.guessSpace, self.r), self.MAX_PERMS))
-                keys = list(itertools.islice(itertools.permutations(self.guessSpace, self.r), self.MAX_PERMS))
-            else:
-                all_keys = list(itertools.permutations(self.guessSpace, self.r))                
-                keys = list(itertools.permutations(self.guessSpace, self.r))
+            all_keys = list(itertools.permutations(self.guessSpace, self.r))                
+            keys = list(itertools.permutations(self.guessSpace, self.r))
                 
             print("Initial key table size is "+str(len(keys)))
             

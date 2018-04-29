@@ -90,24 +90,41 @@ class MastermindSolver:
         return seed
         
     
-    def bigSolve(self, m):
+    def zeroGuesser(self, m, goal, limit):
     ### solver that attempts to reduce the number space by guessing
     ### for [0,0]s first before solving as normal
-
+        print("ENTERING GUESSER")
         levelurl = self.BASE_URL + '/level/' + str(self.level) + '/'
+        guessLimit = limit
 
-        done = False
-        while done == False:
+        done = 0
+        r = self.request(levelurl, method='GET')
+        while done < goal and m.getNumberOfGuesses() > guessLimit:
             g = m.randomGuess()
-            r = self.request(levelurl, method='POST', data={'guess':g})
-            if tuple(r['response']) == (0,0):
+            print(g)
+            r = self.request(levelurl, method='POST', data={'guess':g})            
+            if ('response' in r and tuple(r['response'])) == (0,0):
                 print("FOUND ZERO GUESS- REDUCING GUESS SPACE")
                 m.reduceGuessSpace(g)
                 print(m.getGuessSpace())
-                done = True
+                done += 1
                 
-        self.basicSolve(m)
-            
+            elif('error' in r and r['error'] == self.TOO_MANY_GUESSES):
+                print("OUT OF GUESSES- RESTARTING LEVEL\n")
+                self.request(levelurl, method='GET')
+                
+            elif('error' in r and r['error'] == self.TOOK_TOO_LONG):
+                print("GUESS TOOK TOO LONG- RESTARTING LEVEL\n")
+                self.request(levelurl, method='GET')
+                
+            elif('message' in r and r['message'] == self.NEXT_LEVEL):
+                print(" >>> LEVEL WON! Onto the next. <<< ")
+                done += 1
+            else:
+                print(r)
+
+        print("Found "+ str(done) +" zeroes this time")
+        return done
         
     def basicSolve(self, m):
     ### basic solver for small values of r and t ###
@@ -117,9 +134,9 @@ class MastermindSolver:
         seed = self.seedGen(m, levelurl);
         m.genTable(seed)
 
-        # makes a guess
         win = False
         res = None
+
         while win == False:
             g = m.nextGuess(res)
             print("TRYING GUESS: "+str(g))        
@@ -166,7 +183,15 @@ class MastermindSolver:
             # ADVANCED #
             else:
                 print("ADVANCED SOLVE ACTIVATE")
-                self.bigSolve(m)
+                goal = 2 # how many zero guessers we want before moving on
+                limit = 10 # how many guesses we want to have afterwards
+                got = self.zeroGuesser(m, goal, limit) # how many we actually got this time
+                while (got < goal):
+                    print("Didn't get "+str(goal)+" zeroes this time. Trying again!")
+                    got = self.zeroGuesser(m, goal, limit)
+                    
+                self.basicSolve(m)
+
                 # win = parallelSolve(m, levelurl)
 
             self.level += 1
