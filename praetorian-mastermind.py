@@ -93,13 +93,9 @@ class MastermindSolver:
     def zeroGuesser(self, m, goal, limit):
     ### solver that attempts to reduce the number space by guessing
     ### for [0,0]s first before solving as normal
-        print("ENTERING GUESSER")
         levelurl = self.BASE_URL + '/level/' + str(self.level) + '/'
-        guessLimit = limit
-
         done = 0
-        r = self.request(levelurl, method='GET')
-        while done < goal and m.getNumberOfGuesses() > guessLimit:
+        while done < goal:
             g = m.randomGuess()
             print(g)
             r = self.request(levelurl, method='POST', data={'guess':g})            
@@ -107,20 +103,23 @@ class MastermindSolver:
                 print("FOUND ZERO GUESS- REDUCING GUESS SPACE")
                 m.reduceGuessSpace(g)
                 print(m.getGuessSpace())
+                print("Number of guesses left :"+str(m.getNumberOfGuesses()))                
                 done += 1
                 
             elif('error' in r and r['error'] == self.TOO_MANY_GUESSES):
                 print("OUT OF GUESSES- RESTARTING LEVEL\n")
-                self.request(levelurl, method='GET')
+                return 0
                 
             elif('error' in r and r['error'] == self.TOOK_TOO_LONG):
                 print("GUESS TOOK TOO LONG- RESTARTING LEVEL\n")
-                self.request(levelurl, method='GET')
+                return 0
                 
             elif('message' in r and r['message'] == self.NEXT_LEVEL):
                 print(" >>> LEVEL WON! Onto the next. <<< ")
-                done += 1
+                return goal
+
             else:
+                print("Number of guesses left :"+str(m.getNumberOfGuesses()))                
                 print(r)
 
         print("Found "+ str(done) +" zeroes this time")
@@ -173,28 +172,16 @@ class MastermindSolver:
             print("---------------------------------------------------------")                            
 
             basic = True if r['numWeapons'] < 20 else False
-            # basic = True if comb(r['numWeapons'], r['numGladiators'], exact=False) < 5000000 else False
             m = Mastermind.Mastermind(r['numGladiators'], r['numWeapons'], r['numGuesses'])
             
-            # BASIC #
-            if basic:
-                self.basicSolve(m)
-
-            # ADVANCED #
-            else:
+            if basic == False: 
                 print("ADVANCED SOLVE ACTIVATE")
-                goal = 2 # how many zero guessers we want before moving on
-                limit = 10 # how many guesses we want to have afterwards
-                got = self.zeroGuesser(m, goal, limit) # how many we actually got this time
-                while (got < goal):
-                    print("Didn't get "+str(goal)+" zeroes this time. Trying again!")
-                    got = self.zeroGuesser(m, goal, limit)
+                got = self.zeroGuesser(m, 2, 0)
+                if got != 2:
+                    continue
                     
-                self.basicSolve(m)
-
-                # win = parallelSolve(m, levelurl)
-
-            self.level += 1
+            if self.basicSolve(m):
+                self.level += 1
 
 
 def main():

@@ -56,10 +56,9 @@ class Mastermind:
         # (i, j) where i is # matches, j is # that match position as well
         # if res is None, means first guess, just return defaulto
         
-        if res == None:
-            return {'guess': list(self.guess)}
+        if res != None:
+            self.reduceTable(res)            
 
-        self.reduceTable(res)
         t = self.table
         if len(t) == 1:
             self.guess = list(t.keys())[0]
