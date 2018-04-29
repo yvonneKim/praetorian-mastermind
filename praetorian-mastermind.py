@@ -143,15 +143,19 @@ class MastermindSolver:
 
             if('error' in r and r['error'] == self.TOO_MANY_GUESSES):
                 print("OUT OF GUESSES- RESTARTING LEVEL\n")
-                self.request(levelurl, method='GET')
+                return False
                 
-            if('error' in r and r['error'] == self.TOOK_TOO_LONG):
+            elif('error' in r and r['error'] == self.TOOK_TOO_LONG):
                 print("GUESS TOOK TOO LONG- RESTARTING LEVEL\n")
-                self.request(levelurl, method='GET')
+                return False
                 
-            if('message' in r and r['message'] == self.NEXT_LEVEL):
+            elif('message' in r and r['message'] == self.NEXT_LEVEL):
                 print(" >>> LEVEL WON! Onto the next. <<< ")
-                win = True
+                return True
+
+            elif('roundsLeft' in r):
+                print(" ROUND WON! "+str(r['roundsLeft'])+" left to go. < ")
+                return True
                 
             else:
                 print(r)
@@ -163,6 +167,7 @@ class MastermindSolver:
 
         while(self.level < 7):
             r = self.resumeLevel()
+            rounds = r['numRounds']
 
             print("\n=========================================================")
             print("======================== LEVEL "+str(self.level)+" ========================")
@@ -170,7 +175,7 @@ class MastermindSolver:
                   % (r['numGladiators'], r['numWeapons'], r['numGuesses'], r['numRounds'])
                   )
             print("---------------------------------------------------------")                            
-
+    
             basic = True if r['numWeapons'] < 20 else False
             m = Mastermind.Mastermind(r['numGladiators'], r['numWeapons'], r['numGuesses'])
             
@@ -179,8 +184,14 @@ class MastermindSolver:
                 got = self.zeroGuesser(m, 2, 0)
                 if got != 2:
                     continue
-                    
-            if self.basicSolve(m):
+
+            while (rounds > 0):
+                if self.basicSolve(m):
+                    rounds -= 1
+                else:
+                    break
+
+            if rounds == 0:
                 self.level += 1
 
 
