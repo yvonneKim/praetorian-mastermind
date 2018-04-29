@@ -106,7 +106,6 @@ class Mastermind:
                     self.table[i][j] = self.matchRes(i, j)
 
         else:
-
             all_keys = list(itertools.permutations(self.guessSpace, self.r))                
             keys = list(itertools.permutations(self.guessSpace, self.r))
                 
@@ -114,8 +113,6 @@ class Mastermind:
             
             for k in seed.keys():
                 keys = [x for x in keys if self.matchRes(x, k) == seed[k]]
-                if len(keys) == 0: # got the wrong batch of perms to try
-                    return False
                 print(" ... reduced to "+str(len(keys)))
 
             for i in keys:

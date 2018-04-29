@@ -14,6 +14,7 @@ class MastermindSolver:
 
         self.level = 1
         self.headers = self.initHeaders(self.EMAIL)
+        self.seed_power = 3 # how many guesses to leave after seed
         
         
     def initHeaders(self, email):
@@ -70,7 +71,7 @@ class MastermindSolver:
     def seedGen(self, m, levelurl):
     ### generates a seed for genTable ###
 
-        seed_count = m.getNumberOfGuesses() - 5
+        seed_count = m.getNumberOfGuesses() - self.seed_power
 
         print("Initializing seed ....")
 
@@ -154,7 +155,8 @@ class MastermindSolver:
                 return True
 
             elif('roundsLeft' in r):
-                print(" ROUND WON! "+str(r['roundsLeft'])+" left to go. < ")
+                print(" >>> ROUND WON! "+str(r['roundsLeft'])+" left to go. <<< ")
+                print(" ------------------------------------------------------- ")
                 return True
                 
             else:
@@ -188,6 +190,8 @@ class MastermindSolver:
             while (rounds > 0):
                 if self.basicSolve(m):
                     rounds -= 1
+                    r = self.resumeLevel()                    
+                    m = Mastermind.Mastermind(r['numGladiators'], r['numWeapons'], r['numGuesses'])
                 else:
                     break
 
