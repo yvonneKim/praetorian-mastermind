@@ -1,4 +1,4 @@
-import itertools, random
+import itertools, random, sys
 # beep boop I am programming
 
 class Mastermind:
@@ -60,6 +60,10 @@ class Mastermind:
             self.reduceTable(res)            
 
         t = self.table
+        if len(t) == 0:
+            print("FATAL ERROR: AVAILABLE GUESSES LIST IS EMPTY")
+            sys.exit(1)
+
         if len(t) == 1:
             self.guess = list(t.keys())[0]
             return {'guess': self.guess}
@@ -115,6 +119,7 @@ class Mastermind:
                 keys = [x for x in keys if self.matchRes(x, k) == seed[k]]
                 print(" ... reduced to "+str(len(keys)))
 
+            print("matching keys....")
             for i in keys:
                 self.table[i] = {}
                 for j in all_keys:

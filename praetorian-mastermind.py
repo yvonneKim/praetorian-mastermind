@@ -120,8 +120,7 @@ class MastermindSolver:
                 return goal
 
             else:
-                print("Number of guesses left :"+str(m.getNumberOfGuesses()))                
-                print(r)
+                print("Number of guesses left :"+str(m.getNumberOfGuesses()))
 
         print("Found "+ str(done) +" zeroes this time")
         return done
@@ -141,6 +140,7 @@ class MastermindSolver:
             g = m.nextGuess(res)
             print("TRYING GUESS: "+str(g))        
             r = self.request(levelurl, method='POST', data=g)
+            
 
             if('error' in r and r['error'] == self.TOO_MANY_GUESSES):
                 print("OUT OF GUESSES- RESTARTING LEVEL\n")
@@ -151,6 +151,7 @@ class MastermindSolver:
                 return False
                 
             elif('message' in r and r['message'] == self.NEXT_LEVEL):
+                
                 print(" >>> LEVEL WON! Onto the next. <<< ")
                 return True
 
@@ -160,7 +161,6 @@ class MastermindSolver:
                 return True
                 
             else:
-                print(r)
                 res = tuple(r['response'])
 
 
@@ -194,9 +194,6 @@ class MastermindSolver:
                     m = Mastermind.Mastermind(r['numGladiators'], r['numWeapons'], r['numGuesses'])
                 else:
                     break
-
-            if rounds == 0:
-                self.level += 1
 
 
 def main():
