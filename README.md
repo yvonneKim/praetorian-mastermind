@@ -3,6 +3,8 @@ A program that solves the Mastermind puzzle game challenge from Praetorian.
 
 https://www.praetorian.com/challenges/mastermind
 
+https://en.wikipedia.org/wiki/Mastermind_(board_game)
+
 
 SOLVED! -Y.H.Kim
 
